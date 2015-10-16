@@ -21,13 +21,13 @@
     </div>
         <table class="auto-style1">
             <tr>
-                <td class="auto-style2">Website:</td>
+                <td class="auto-style2">URL:</td>
                 <td>
                     <asp:TextBox ID="txtWebsite" runat="server" Width="303px"></asp:TextBox>
                 </td>
             </tr>
             <tr>
-                <td class="auto-style2">Query Parameter</td>
+                <td class="auto-style2">Post Parameter:</td>
                 <td>
                     <asp:TextBox ID="txtParam" runat="server" Width="305px"></asp:TextBox>
                 </td>
@@ -41,6 +41,9 @@
         <br />
         <br />
         <asp:Label ID="lblParseResult" runat="server"></asp:Label>
+        <br />
+        <asp:GridView ID="gvParseResult" runat="server">
+        </asp:GridView>
     </form>
 </body>
 </html>

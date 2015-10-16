@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -23,12 +26,15 @@ namespace GrabAndParseHtmlCSharp
         {
             String website = txtWebsite.Text;
             String param = txtParam.Text;
-            String htmlData = GrabHtmlData(website, param);
+            String htmlData = GrabHtmlDataByWebRequest(website, param);
             if (htmlData != null)
             {
                 lblGrabResult.Text = "Size of html data: " + htmlData.Length + " characters";
                 List<EventLog> logs = ParseData(htmlData);
-                logs.ForEach(log => lblParseResult.Text = lblParseResult.Text + log + "<br>");
+                lblParseResult.Text = "Count of items: " + logs.Count;
+                // bind results to gridview
+                gvParseResult.DataSource = logs;
+                gvParseResult.DataBind();
             }
             else
             {
@@ -36,7 +42,8 @@ namespace GrabAndParseHtmlCSharp
             }
         }
 
-        private string GrabHtmlData(string website, string param)
+        // way 1, get html data using WebRequest
+        private string GrabHtmlDataByWebRequest(string website, string param)
         {
             // create http request
             HttpWebRequest request = WebRequest.CreateHttp(website) as HttpWebRequest;
@@ -61,6 +68,22 @@ namespace GrabAndParseHtmlCSharp
             }
             return null;
         }
+
+        // way 2, get html data using WebClient
+        private string GrabHtmlDatabyWebClient(string website, string param)
+        {
+            using (var client = new WebClient())
+            {
+                // create post parameters
+                var values = new NameValueCollection();
+                values["pro"] = param;
+                // get response
+                var response = client.UploadValues(website, values);
+                return Encoding.Default.GetString(response);
+            }
+        }
+
+        // parse data using Html Agility Pack
         private List<EventLog> ParseData(string htmlData)
         {
             var logs = new List<EventLog>();
@@ -70,10 +93,10 @@ namespace GrabAndParseHtmlCSharp
             // find the log table
             var resultNode = document.DocumentNode.QuerySelector(".ServicesResults .textTracing");
             // extract data
-                String date = null;
-                String time = null;
-                String status = null;
-                String location = null;
+            String date = null;
+            String time = null;
+            String status = null;
+            String location = null;
             foreach (var rowNode in resultNode.Descendants("tr").Skip(2))
             {
                 var colNodes = rowNode.Descendants("td");
@@ -84,8 +107,8 @@ namespace GrabAndParseHtmlCSharp
                 var colList = colNodes.ToList();
                 if (colList[0].InnerText != "&nbsp;")
                     date = colList[0].InnerText;
-                time =  colList[1].InnerText;
-                status =  colList[2].InnerText;
+                time = colList[1].InnerText;
+                status = colList[2].InnerText;
                 location = colList[3].InnerText;
                 var log = new EventLog()
                 {
@@ -98,11 +121,12 @@ namespace GrabAndParseHtmlCSharp
             return logs;
         }
     }
+
     public class EventLog
     {
-        public DateTime EventDate;
-        public String EventName;
-        public String EventLocation;
+        public DateTime EventDate { get; set; }
+        public String EventName { get; set; }
+        public String EventLocation { get; set; }
         public override string ToString()
         {
             return EventDate + " " + EventName + " " + EventLocation;
