@@ -105,14 +105,18 @@ namespace GrabAndParseHtmlCSharp
                     throw new InvalidOperationException("The website modify the format result results");
                 }
                 var colList = colNodes.ToList();
-                if (colList[0].InnerText != "&nbsp;")
+                if (colList[0].InnerText != "&nbsp" && colList[0].InnerText != "&nbsp;")
                     date = colList[0].InnerText;
                 time = colList[1].InnerText;
+                if (time.Length > 5)
+                {
+                    time = time.Substring(0, 5);
+                }
                 status = colList[2].InnerText;
                 location = colList[3].InnerText;
                 var log = new EventLog()
                 {
-                    EventDate = DateTime.Now,
+                    EventDate = DateTime.Parse(date + " " + time),
                     EventName = status,
                     EventLocation = location
                 };

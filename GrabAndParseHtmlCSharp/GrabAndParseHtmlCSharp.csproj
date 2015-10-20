@@ -83,7 +83,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HtmlParserByGet.aspx" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -100,13 +99,6 @@
   <ItemGroup>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="HtmlParserByGet.aspx.cs">
-      <DependentUpon>HtmlParserByGet.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="HtmlParserByGet.aspx.designer.cs">
-      <DependentUpon>HtmlParserByGet.aspx</DependentUpon>
     </Compile>
     <Compile Include="HtmlParser.aspx.cs">
       <DependentUpon>HtmlParser.aspx</DependentUpon>
